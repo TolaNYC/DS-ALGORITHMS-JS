@@ -1,0 +1,114 @@
+class TreeNode {
+constructor(val){
+this.val = val;
+  this.left = null;
+  this.right = null;
+  }
+}
+
+
+let root = new TreeNode(3);
+let one = new TreeNode(9);
+let two = new TreeNode(20);
+let three = new TreeNode(15);
+let four = new TreeNode(7);
+
+root.left = one;
+root.right = two;
+two.left = three;
+two.right =four;
+
+
+console.log(root.val);
+console.log(root.left.val);
+console.log(root.right.val);
+console.log(two.left.val);
+console.log(two.right.val);
+
+
+ 
+
+
+// Depth First Search
+
+function dfs(node){
+
+if(!node){
+  return;
+}
+
+  dfs(node.left);
+  dfs(node.right);
+return
+}
+
+
+
+// Maximum DFS
+
+function maximumDFS(root){
+
+if(!root){
+return 0;
+}
+
+let left = maximumDFS(root.left);
+let right = maximumDFS(root.right);
+
+  return Math.max(left,right) +1;
+
+}
+
+console.log(`The max depth is using recursive DFS: ${maximumDFS(root)}`);
+
+
+/*
+
+   3
+  / \
+ 9   20
+     /  \
+    15   7
+
+*/
+
+
+function linearMaximumDepth(root){
+// if no root return 0
+  if (!root) {
+    return 0;
+  }
+
+// keep track of current node and its depth
+  let stack = [[root, 1]];
+  let ans = 0;
+
+  // for how long stack is not empty
+  while (stack.length) {
+
+    // get the depth of the node and pop it from the stack 
+    let [node, depth] = stack.pop();
+    // update max
+    ans = Math.max(ans, depth);
+
+    // push left node and increase depth
+    if (node.left) {
+        stack.push([node.left, depth + 1]);
+    }
+
+    
+    if (node.right) {
+        stack.push([node.right, depth + 1]);
+    }
+  }
+  return ans;
+}
+
+console.log(`The max depth using linear DFS is: ${linearMaximumDepth(root)}`);
+
+
+
+
+
+// METHOD 2 
+console.log("IMPLEMENTATION 2");
