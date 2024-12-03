@@ -1,0 +1,130 @@
+
+class Node {
+  constructor(value) {
+      this.value = value;
+      this.left = null;
+      this.right = null;
+  }
+}
+
+class BinarySearchTree {
+  constructor() {
+      this.root = null;
+  }
+
+  insert(value) {
+      const newNode = new Node(value);
+      if (!this.root) {
+          this.root = newNode;
+          return this;
+      }
+
+      let current = this.root;
+      while (true) {
+          if (value === current.value) return undefined;
+          if (value < current.value) {
+              if (!current.left) {
+                  current.left = newNode;
+                  return this;
+              }
+              current = current.left;
+          } else {
+              if (!current.right) {
+                  current.right = newNode;
+                  return this;
+              }
+              current = current.right;
+          }
+      }
+  }
+
+  // Get tree height
+  getHeight(node = this.root) {
+      if (!node) return 0;
+      return 1 + Math.max(this.getHeight(node.left), this.getHeight(node.right));
+  }
+
+  // Calculate the width needed for the tree
+  getWidth() {
+      return Math.pow(2, this.getHeight() - 1) * 8;
+  }
+
+  displayTree() {
+      if (!this.root) {
+          console.log("\nEmpty tree");
+          return;
+      }
+
+      const height = this.getHeight();
+      const width = this.getWidth();
+
+      // Create display arrays for nodes and connections
+      const display = Array(height * 2 - 1).fill().map(() => Array(width).fill(' '));
+
+      // Helper function to recursively print the tree
+      const printNode = (node, level, left, right, display) => {
+          if (!node) return;
+
+          const mid = Math.floor((left + right) / 2);
+          const nodeStr = `(${node.value.toString().padStart(2)})`;
+          const nodePos = mid - 2;  // Center the node
+
+          // Place the node
+          for (let i = 0; i < nodeStr.length; i++) {
+              display[level * 2][nodePos + i] = nodeStr[i];
+          }
+
+          // Draw connections to children
+          if (node.left) {
+              const childMid = Math.floor((left + mid) / 2);
+              // Draw left connection
+              display[level * 2 + 1][childMid] = '┌';
+              for (let i = childMid + 1; i < nodePos + 2; i++) {
+                  display[level * 2 + 1][i] = '─';
+              }
+              display[level * 2 + 1][nodePos + 2] = '┘';
+              printNode(node.left, level + 1, left, mid, display);
+          }
+
+          if (node.right) {
+              const childMid = Math.floor((mid + right) / 2);
+              // Draw right connection
+              display[level * 2 + 1][nodePos + 2] = '└';
+              for (let i = nodePos + 3; i < childMid; i++) {
+                  display[level * 2 + 1][i] = '─';
+              }
+              display[level * 2 + 1][childMid] = '┐';
+              printNode(node.right, level + 1, mid, right, display);
+          }
+      };
+
+      // Print the tree
+      printNode(this.root, 0, 0, width, display);
+
+      // Output the result
+      console.log("\nBinary Search Tree:");
+      console.log("=" + "=".repeat(width) + "=");
+      console.log(display.map(row => row.join('')).join('\n'));
+      console.log("=" + "=".repeat(width) + "=");
+  }
+
+  // Verify BST properties
+  isBST(node = this.root, min = -Infinity, max = Infinity) {
+      if (!node) return true;
+
+      if (node.value <= min || node.value >= max) {
+          return false;
+      }
+
+      return this.isBST(node.left, min, node.value) && 
+             this.isBST(node.right, node.value, max);
+  }
+}
+
+// Test the tree
+const bst = new BinarySearchTree();
+
+
+
+
+
