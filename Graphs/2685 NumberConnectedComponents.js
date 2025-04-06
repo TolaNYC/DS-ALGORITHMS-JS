@@ -62,53 +62,60 @@ let edges = [[0,1],[0,2],[1,2],[3,4],[3,5]];
 
 function nrConnectedComponents(n,edges){
 
-
-  // Create an empty adjacency list (array of arrays)
-  const adj = [];
+  // Build the graph
+  let graph = new Map();
   for (let i = 0; i < n; i++) {
-      adj.push([]);
+      graph.set(i, []);
   }
 
-  // Populate the adjacency list from the edges
-  for (const [u, v] of edges) {     
-      adj[u].push(v);
-      adj[v].push(u); 
+  // Add edges
+  for (const [a, b] of edges) {
+      graph.get(a).push(b);
+      graph.get(b).push(a);
   }
 
-  // --- 2. Initialize Visited Set and Component Count ---
-  const visited = new Set();
-  let nrComponents = 0;
+  // Track visited nodes and components
+  let seen = new Array(n).fill(false);
+  let completeCount = 0;
 
-  // --- 3. Define DFS Function ---
-  const dfs = (startNode) => {
-      const stack = [startNode];
+  // DFS to find connected components
+  let dfs = start => {
+      let component = [];
+      let stack = [start];
+      seen[start] = true;
 
-      while (stack.length > 0) {
-          const node = stack.pop();
+      while (stack.length) {
+          let node = stack.pop();
+          component.push(node);
 
-          // Explore neighbors
-          for (const neighbor of adj[node]) {
-              if (!visited.has(neighbor)) {
-                  visited.add(neighbor); // Mark neighbor as visited
-                  stack.push(neighbor); // Add neighbor to the stack for exploration
+          for (const neighbor of graph.get(node)) {
+              if (!seen[neighbor]) {
+                  seen[neighbor] = true;
+                  stack.push(neighbor);
               }
           }
       }
-  };
 
-  //4. Iterate Through All Nodes
+      // Check if component is complete
+      let size = component.length;
+      for (const node of component) {
+          if (graph.get(node).length !== size - 1) {
+              return false; // Not complete
+          }
+      }
+      return true; // Complete
+  }
+
+  // Process each node
   for (let i = 0; i < n; i++) {
-      // If node 'i' hasn't been visited yet, it means we found a new component
-      if (!visited.has(i)) {
-          nrComponents++; 
-          visited.add(i);   
-          dfs(i);          
+      if (!seen[i]) {
+          if (dfs(i)) {
+              completeCount++;
+          }
       }
   }
 
-  // --- 5. Return Result ---
-  return nrComponents;
-
+  return completeCount;
 }
 
 
